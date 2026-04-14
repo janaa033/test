@@ -1,18 +1,17 @@
 const driverService = require("../services/driverService.js");
-const jwt = require("jsonwebtoken");
 
 class DriverController {
-  /**
-   * @openapi
-   * /drivers:
-   *   get:
-   *     summary: Get all drivers
-   *     tags:
-   *       - Drivers
-   *     responses:
-   *       200:
-   *         description: Drivers list
-   */
+ /**
+ * @openapi
+ * /drivers:
+ *   get:
+ *     summary: Get all drivers
+ *     tags:
+ *       - Drivers
+ *     responses:
+ *       200:
+ *         description: Drivers list
+ */
   async getDrivers(req, res) {
     const drivers = await driverService.getAllDrivers();
     res.json(drivers);
@@ -56,8 +55,7 @@ class DriverController {
     const existing = await driverService.findByPhone(phone);
 
     if (existing) {
-      return res.json({ error: "Driver already exists" });
-    }
+      return res.json({ error: "Driver already exists" });}
 
     const newDriver = {
       name,
@@ -69,50 +67,6 @@ class DriverController {
 
     const driver = await driverService.addDriver(newDriver);
     res.json(driver);
-  }
-
-  /**
-   * @openapi
-   * /drivers/login:
-   *   post:
-   *     summary: Driver login
-   *     tags:
-   *       - Drivers
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             type: object
-   *             properties:
-   *               phone:
-   *                 type: string
-   *               password:
-   *                 type: string
-   *     responses:
-   *       200:
-   *         description: Login successful
-   */
-  async login(req, res) {
-    const { phone, password } = req.body;
-
-    const driver = await driverService.findByPhone(phone);
-
-    if (!driver) {
-      return res.json({ error: "Invalid credentials" });
-    }
-
-    if (password !== driver.password) {
-      return res.json({ error: "Invalid credentials" });
-    }
-
-    const token = jwt.sign(
-      { phone: driver.phone, type: driver.type },
-      "secret123",
-      { expiresIn: "1h" }
-    );
-
-    res.json({ token });
   }
 
   /**

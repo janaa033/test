@@ -12,8 +12,9 @@ class OrderController {
    *       200:
    *         description: Orders list
    */
-  getOrders(req, res) {
-    res.json(orderService.getAllOrders());
+  async getOrders(req, res) {
+    const orders = await orderService.getAllOrders();
+    res.json(orders);
   }
 
   /**
@@ -23,8 +24,6 @@ class OrderController {
    *     summary: Create an order
    *     tags:
    *       - Orders
-   *     security:
-   *       - bearerAuth: []
    *     requestBody:
    *       required: true
    *       content:
@@ -32,8 +31,6 @@ class OrderController {
    *           schema:
    *             type: object
    *             properties:
-   *               id:
-   *                 type: integer
    *               store:
    *                 type: string
    *               customerName:
@@ -54,9 +51,8 @@ class OrderController {
    *       200:
    *         description: Order created
    */
-  createOrder(req, res) {
+  async createOrder(req, res) {
     const {
-      id,
       store,
       customerName,
       phone,
@@ -64,15 +60,14 @@ class OrderController {
       time,
       status,
       notes,
-      price
+      price,
     } = req.body;
 
-    if (!id || !store || !customerName || !phone || !address || !time || !status) {
+    if (!store || !customerName || !phone || !address || !time || !status) {
       return res.json({ error: "Missing data" });
     }
 
     const newOrder = {
-      id,
       store,
       customerName,
       phone,
@@ -80,10 +75,11 @@ class OrderController {
       time,
       status,
       notes: notes || "",
-      price: price || 0
+      price: price || 0,
     };
 
-    res.json(orderService.addOrder(newOrder));
+    const order = await orderService.addOrder(newOrder);
+    res.json(order);
   }
 
   /**
@@ -93,8 +89,6 @@ class OrderController {
    *     summary: Delete an order
    *     tags:
    *       - Orders
-   *     security:
-   *       - bearerAuth: []
    *     parameters:
    *       - in: path
    *         name: id
@@ -105,8 +99,10 @@ class OrderController {
    *       200:
    *         description: Order deleted
    */
-  deleteOrder(req, res) {
-    const order = orderService.deleteOrder(Number(req.params.id));
+  async deleteOrder(req, res) {
+    const id = Number(req.params.id);
+
+    const order = await orderService.deleteOrder(id);
 
     if (!order) {
       return res.json({ error: "Not found" });

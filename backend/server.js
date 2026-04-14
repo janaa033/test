@@ -1,7 +1,6 @@
 const express = require("express");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./swagger");
-const auth = require("./middleware/auth.js");
 
 const app = express();
 app.use(express.json());
@@ -29,6 +28,14 @@ app.delete("/drivers/:phone", (req, res) => {
 
 app.get("/orders", (req, res) => {
   orderController.getOrders(req, res);
+});
+
+app.post("/orders", (req, res) => {
+  orderController.createOrder(req, res);
+});
+
+app.delete("/orders/:id", (req, res) => {
+  orderController.deleteOrder(req, res);
 });
 
 app.listen(5000, () => {
