@@ -1,9 +1,4 @@
-require("dotenv/config");
-const { PrismaClient } = require("@prisma/client");
-
-const prisma = new PrismaClient({
-  datasourceUrl: process.env.DATABASE_URL,
-});
+const prisma = require("../lib/prisma.js");
 
 class OrderService {
   async getAllOrders() {

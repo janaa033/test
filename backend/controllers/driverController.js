@@ -1,6 +1,5 @@
 const driverService = require("../services/driverService.js");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 
 class DriverController {
   /**
@@ -14,8 +13,9 @@ class DriverController {
    *       200:
    *         description: Drivers list
    */
-  getDrivers(req, res) {
-    res.json(driverService.getAllDrivers());
+  async getDrivers(req, res) {
+    const drivers = await driverService.getAllDrivers();
+    res.json(drivers);
   }
 
   /**
@@ -53,23 +53,22 @@ class DriverController {
       return res.json({ error: "Missing data" });
     }
 
-    const existingDriver = driverService.findByPhone(phone);
+    const existing = await driverService.findByPhone(phone);
 
-    if (existingDriver) {
+    if (existing) {
       return res.json({ error: "Driver already exists" });
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newDriver = {
       name,
       phone,
-      password: hashedPassword,
+      password,
       type,
-      company
+      company,
     };
 
-    res.json(driverService.addDriver(newDriver));
+    const driver = await driverService.addDriver(newDriver);
+    res.json(driver);
   }
 
   /**
@@ -88,10 +87,8 @@ class DriverController {
    *             properties:
    *               phone:
    *                 type: string
-   *                 example: "0799999999"
    *               password:
    *                 type: string
-   *                 example: "1234"
    *     responses:
    *       200:
    *         description: Login successful
@@ -99,15 +96,13 @@ class DriverController {
   async login(req, res) {
     const { phone, password } = req.body;
 
-    const driver = driverService.findByPhone(phone);
+    const driver = await driverService.findByPhone(phone);
 
     if (!driver) {
       return res.json({ error: "Invalid credentials" });
     }
 
-    const isMatch = await bcrypt.compare(password, driver.password);
-
-    if (!isMatch) {
+    if (password !== driver.password) {
       return res.json({ error: "Invalid credentials" });
     }
 
@@ -137,8 +132,8 @@ class DriverController {
    *       200:
    *         description: Driver deleted
    */
-  deleteDriver(req, res) {
-    const driver = driverService.deleteDriver(req.params.phone);
+  async deleteDriver(req, res) {
+    const driver = await driverService.deleteDriver(req.params.phone);
 
     if (!driver) {
       return res.json({ error: "Not found" });

@@ -23,24 +23,12 @@ app.post("/drivers", (req, res) => {
   driverController.createDriver(req, res);
 });
 
-app.post("/drivers/login", (req, res) => {
-  driverController.login(req, res);
-});
-
 app.delete("/drivers/:phone", (req, res) => {
   driverController.deleteDriver(req, res);
 });
 
 app.get("/orders", (req, res) => {
   orderController.getOrders(req, res);
-});
-
-app.post("/orders", auth, (req, res) => {
-  orderController.createOrder(req, res);
-});
-
-app.delete("/orders/:id", auth, (req, res) => {
-  orderController.deleteOrder(req, res);
 });
 
 app.listen(5000, () => {
