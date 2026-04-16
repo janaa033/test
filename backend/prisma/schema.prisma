@@ -7,12 +7,14 @@ datasource db {
 }
 
 model Driver {
-  id       Int    @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   name     String
-  phone    String @unique
+  phone    String  @unique
   password String
   type     String
   company  String
+
+  orders   Order[]
 }
 
 model Order {
@@ -25,4 +27,7 @@ model Order {
   status       String
   notes        String?
   price        Float?
+
+  driverId     Int
+  driver       Driver  @relation(fields: [driverId], references: [id])
 }

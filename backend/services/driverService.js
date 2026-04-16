@@ -16,6 +16,12 @@ class DriverService {
       where: { phone },
     });
   }
+  
+async findById(id) {
+  return await prisma.driver.findUnique({
+    where: { id },
+  });
+}
 
   async deleteDriver(phone) {
     const driver = await prisma.driver.findUnique({

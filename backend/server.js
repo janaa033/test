@@ -38,6 +38,10 @@ app.delete("/orders/:id", (req, res) => {
   orderController.deleteOrder(req, res);
 });
 
+app.put("/orders/:id/status", (req, res) => {
+  orderController.updateOrderStatus(req, res);
+});
+
 app.listen(5000, () => {
   console.log("http://localhost:5000");
   console.log("http://localhost:5000/api-docs");
